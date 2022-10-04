@@ -6,29 +6,34 @@ from datetime import datetime
 from openpyxl import load_workbook
 
 
-@repeat(every(1).second) #.until("18:30")
+@repeat(every(1).hour) #.until("18:30")
 def getir_to_excel():
 
     myFileName=r'./Sheet.xlsx'
 
     wb = load_workbook(filename=myFileName)
-
+    
+    #TODO: gonna create the page for every restaurant and make the changes into those restaurants
     ws = wb['Sheet1']
-
+    
+    #TODO: Be sure that all the restaurant are open! And get the links. Then create a if statement to make OPEN/CLOSE diff
     url_list1 = ["https://getir.com/yemek/restoran/cosa-bi-corba-bi-salata-kozyatagi-mah-kadikoy-istanbul/"]
     url_list = ["https://getir.com/yemek/restoran/konoha-bagdat-cad-kadikoy-istanbul/"]
 
     for i in url_list:
 
+        #This is for 'if connection get suspened by getir.com because we are making so much request in a short time'
         try:
             r = requests.get(i)
         except requests.exceptions.ConnectionError:
             sec = 60*3
             sleep(sec)
 
+        #TODO: This is gonna change, because we are not checking the restauant open/close status by status.code normally. # Have the screenshot in the screenshots.
         if r.status_code == 200:
             soup = BeautifulSoup(r.content, 'html.parser')
 
+            #Find the rate
             s = soup.find("div", id = "__next")
             s2 = s.find("div", class_ = 'sc-212542e0-2 ckZpLq')
             s4 = s2.find("main", class_="sc-212542e0-0 iiapCb")
@@ -41,11 +46,12 @@ def getir_to_excel():
             s11 = s10.find("div",class_="style__ContentWrapper-sc-__sc-sbxwka-7 emAjmS")
             s12 = s11.find("div", class_ = "sc-7047f3e2-0 iJHJBI")
             s13 = s12.find("div", class_ = "sc-7047f3e2-3 hbiBbV")
-            s14 = s13.find("span",class_ = "style__Text-sc-__sc-1nwjacj-0 jbOUDC sc-7047f3e2-8 iFDpNz")
+            rate = s13.find("span",class_ = "style__Text-sc-__sc-1nwjacj-0 jbOUDC sc-7047f3e2-8 iFDpNz")
 
             date = datetime.now()
-            current_rating = s14.get_text()
+            current_rating = rate.get_text()
             
+            #TODO: append the date to the current sheet. But this is gonna change by the restaurant.
             ws.append([date, "AÇIK" , current_rating])
 
             wb.save(filename=myFileName)
@@ -54,6 +60,7 @@ def getir_to_excel():
 
             print("Changes saved!")
         
+        #TODO: This is gonna be canceled because we are not going to calculate the current OPEN/CLOSE status with this
         else:
 
             date = datetime.now()
