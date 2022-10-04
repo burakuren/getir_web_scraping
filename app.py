@@ -3,12 +3,20 @@ from time import sleep
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
+from openpyxl import load_workbook
 
-@repeat(every(1).minute) #.until("18:30")
+
+@repeat(every(1).second) #.until("18:30")
 def getir_to_excel():
 
+    myFileName=r'./Sheet.xlsx'
+
+    wb = load_workbook(filename=myFileName)
+
+    ws = wb['Sheet1']
+
+    url_list1 = ["https://getir.com/yemek/restoran/cosa-bi-corba-bi-salata-kozyatagi-mah-kadikoy-istanbul/"]
     url_list = ["https://getir.com/yemek/restoran/konoha-bagdat-cad-kadikoy-istanbul/"]
-    k = 0
 
     for i in url_list:
 
@@ -35,14 +43,29 @@ def getir_to_excel():
             s13 = s12.find("div", class_ = "sc-7047f3e2-3 hbiBbV")
             s14 = s13.find("span",class_ = "style__Text-sc-__sc-1nwjacj-0 jbOUDC sc-7047f3e2-8 iFDpNz")
 
-            print(s14.get_text())
-            print(r.status_code) # this means is open
-            print(datetime.now())
-            k+=1
-            print(k)
+            date = datetime.now()
+            current_rating = s14.get_text()
+            
+            ws.append([date, "AÇIK" , current_rating])
+
+            wb.save(filename=myFileName)
+    
+            wb.close()
+
+            print("Changes saved!")
         
         else:
-            print(r.status_code) # this means is close
+
+            date = datetime.now()
+            
+            ws.append([date, "KAPALI" , "Sistem Kapalı"])
+
+            wb.save(filename=myFileName)
+    
+            wb.close()
+
+            print("Changes saved!")
+
     return url_list
 
 while True:
