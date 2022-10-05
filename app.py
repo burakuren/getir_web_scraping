@@ -5,7 +5,7 @@ import requests
 from datetime import datetime
 from openpyxl import load_workbook
 
-@repeat(every(15).second) #.until("18:30")
+@repeat(every(1).second) #.until("18:30")
 def getir_to_excel():
 
     myFileName=r'./Sheet.xlsx'
@@ -15,7 +15,7 @@ def getir_to_excel():
     #TODO: gonna create the page for every restaurant and make the changes into those restaurants
     ws = wb['Sheet1']
     
-    #TODO: Be sure that all the restaurant are open! And get the links. Then create a if statement to make OPEN/CLOSE diff
+    #TODO: Be sure that all the restaurant are open! And get the links. Then create a if statement to make OPEN/CLOSE diff. Belove statement is not quite right, gotta change it with the real time case.
     url_list = ["https://getir.com/yemek/restoran/konoha-bagdat-cad-kadikoy-istanbul/",
     "https://getir.com/yemek/restoran/cosa-bi-corba-bi-salata-kozyatagi-mah-kadikoy-istanbul/"
     ]
