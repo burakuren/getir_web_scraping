@@ -5,7 +5,7 @@ import requests
 from datetime import datetime
 from openpyxl import load_workbook
 
-@repeat(every(1).second) #.until("18:30")
+@repeat(every(15).second) #.until("18:30")
 def getir_to_excel():
 
     myFileName=r'./Sheet.xlsx'
