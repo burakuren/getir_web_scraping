@@ -79,7 +79,7 @@ def getir_to_excel_first_call():
 getir_to_excel_first_call()
 
 
-@repeat(every(15).minutes) #.until("18:30")
+@repeat(every(40).minutes) #.until("18:30")
 def getir_to_excel():
 
     myFileName=r'./Sheet.xlsx'
