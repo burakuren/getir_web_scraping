@@ -41,25 +41,6 @@ def get_close(soup):
 
     return close
 
-'''
-def get_name(soup):
-
-    s11 = soup.find("div", id = "__next")
-    s10 = s11.find("div", class_ = "sc-212542e0-2 gfYNGG")
-    s9 = s10.find("main", class_ = "sc-212542e0-0 kYcfkH")
-    s8 = s9.find("div", class_ = "sc-e85e5299-0 sc-4e0754cc-0 jClnfO jePsfF")
-    s7 = s8.find("div", class_ = "sc-4e0754cc-1 dOyrVi")
-    s6 = s7.find("div", class_ = "sc-4e0754cc-3 gwxSQr")
-    s5 = s6.find("div", class_ = "sc-7047f3e2-6 dxWpfi") 
-    s4 = s5.find("div", class_ = "style__Wrapper-sc-__sc-sbxwka-15 hZQrGs")
-    s3 = s4.find("div", class_ = "style__CardWrapper-sc-__sc-sbxwka-12 iBBNFu")
-    s2 = s3.find("div", class_ = "style__ContentWrapper-sc-__sc-sbxwka-7 fIhlvO")
-    s1 = s2.find("div", class_ = "sc-7047f3e2-0 ggYwVs")
-    name = s1.find("h1", class_="style__Title1-sc-__sc-1nwjacj-2 hIkhWh sc-7047f3e2-2 hAeUHj")
-
-    return name
-'''
-
 def get_name(url):
 
     return url.split("/")[-2]
@@ -83,6 +64,7 @@ def getir_to_excel():
     ]
 
     for url in url_list:
+
         '''
         #This is for 'if connection get suspened by getir.com because we are making so much request in a short time'
         try:
@@ -91,6 +73,7 @@ def getir_to_excel():
             sec = 60*3
             sleep(sec)
         '''
+
         r = requests.get(url)
 
         #normal status code checks
@@ -98,13 +81,12 @@ def getir_to_excel():
             print(f"The url is not valid {url}.")
 
         if r.status_code != 200:
-
             print("An error occured while creating a connection between app and the getir server ")
 
         #TODO: This is gonna change, because we are not checking the restauant open/close status by status.code normally. # Have the screenshot in the screenshots.
 
         soup = BeautifulSoup(r.content, 'html.parser')
-        
+
         close = get_close(soup=soup)
 
         date = datetime.now()
@@ -149,3 +131,22 @@ def getir_to_excel():
 while True:
     run_pending()
     sleep(1)
+
+'''
+def get_name(soup):
+
+    s11 = soup.find("div", id = "__next")
+    s10 = s11.find("div", class_ = "sc-212542e0-2 gfYNGG")
+    s9 = s10.find("main", class_ = "sc-212542e0-0 kYcfkH")
+    s8 = s9.find("div", class_ = "sc-e85e5299-0 sc-4e0754cc-0 jClnfO jePsfF")
+    s7 = s8.find("div", class_ = "sc-4e0754cc-1 dOyrVi")
+    s6 = s7.find("div", class_ = "sc-4e0754cc-3 gwxSQr")
+    s5 = s6.find("div", class_ = "sc-7047f3e2-6 dxWpfi") 
+    s4 = s5.find("div", class_ = "style__Wrapper-sc-__sc-sbxwka-15 hZQrGs")
+    s3 = s4.find("div", class_ = "style__CardWrapper-sc-__sc-sbxwka-12 iBBNFu")
+    s2 = s3.find("div", class_ = "style__ContentWrapper-sc-__sc-sbxwka-7 fIhlvO")
+    s1 = s2.find("div", class_ = "sc-7047f3e2-0 ggYwVs")
+    name = s1.find("h1", class_="style__Title1-sc-__sc-1nwjacj-2 hIkhWh sc-7047f3e2-2 hAeUHj")
+
+    return name
+'''
