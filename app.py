@@ -46,7 +46,7 @@ def get_name(url):
     return url.split("/")[-2]
 
 
-@repeat(every(1).second) #.until("18:30")
+@repeat(every(2).second) #.until("18:30")
 def getir_to_excel():
 
     myFileName=r'./Sheet.xlsx'
@@ -57,13 +57,39 @@ def getir_to_excel():
     ws = wb['Sheet1']
     
     #TODO: Be sure that all the restaurant are open! And get the links. Then create a if statement to make OPEN/CLOSE diff. Belove statement is not quite right, gotta change it with the real time case.
-    url_list = ["https://getir.com/yemek/restoran/konoha-bagdat-cad-kadikoy-istanbul/",
-    "https://getir.com/yemek/restoran/cosa-bi-corba-bi-salata-kozyatagi-mah-kadikoy-istanbul/",
-    "https://getir.com/yemek/restoran/giresun-konagi-restoran-bagcilar-istanbul/",
-    "https://getir.com/yemek/restoran/gurme-lahmacun-pide-sahrayicedit-mah-kadikoy-istanbul/"
-    ]
+    url_dict = {
+        "Alle Bowls":"https://getir.com/yemek/restoran/alle-bowls-acibadem-mah-kadikoy-istanbul/",
+        "Arianas Cheesecake":"https://getir.com/yemek/restoran/ariana-s-cheesecake-acibadem-mah-kadikoy-istanbul/",
+        "Big Bold Quick":"https://getir.com/yemek/restoran/bbq-big-bold-quick-acibadem-mah-kadikoy-istanbul",
+        "Caesar Salad By":"https://getir.com/yemek/restoran/caesar-salad-by-chef-amadeo-acibadem-mah-kadikoy-istanbul",
+        "Çosa":"https://getir.com/yemek/restoran/cosa-bi-corba-bi-salata-acibadem-mah-kadikoy-istanbul/",
+        "Detroit Bad Boys Pizza":"https://getir.com/yemek/restoran/detroit-bad-boys-pizza-acibadem-mah-kadikoy-istanbul",
+        "Dlycious Dyssert": "https://getir.com/yemek/restoran/dydy-dylicious-dyssert-acibadem-mah-kadikoy-istanbul",
+        "Doyuyo":"https://getir.com/yemek/restoran/doyuyo-sarayardi-cad-kadikoy-istanbul/",
+        "El Pollo Lasso": "https://getir.com/yemek/restoran/el-pollo-lasso-acibadem-mah-kadikoy-istanbul/",
+        "Etişler Köfte" : "https://getir.com/yemek/restoran/et-isleri-kofte-burger-durum-acibadem-mah-kadikoy-istanbul/",
+        "Fadelini" : "https://getir.com/yemek/restoran/fadelini-acibadem-mah-kadikoy-istanbul/",
+        "Fun For Fit": "https://getir.com/yemek/restoran/fun-for-fit-acibadem-mah-kadikoy-istanbul",
+        "G&G Burger": "https://getir.com/yemek/restoran/g-g-burger-acibadem-mah-kadikoy-istanbul-2/",
+        "Gurra Tavuk": "https://getir.com/yemek/restoran/gurra-tavuk-doner-acibadem-mah-kadikoy-istanbul",
+        "Jay Jay Fries": "https://getir.com/yemek/restoran/jay-jay-fries-acibadem-mah-kadikoy-istanbul",
+        "Kale Arkası Mutfak": "https://getir.com/yemek/restoran/kale-arkasi-mutfak-acibadem-mah-kadikoy-istanbul",
+        "Kengeres Çiğ Köfte" : "https://getir.com/yemek/restoran/kengeres-gurme-cig-kofte-acibadem-mah-kadikoy-istanbul",
+        "Madritas": "https://getir.com/yemek/restoran/madritas-acibadem-mah-kadikoy-istanbul",
+        "Mztps Meze" : "https://getir.com/yemek/restoran/mztps-meze-tapas-acibadem-mah-kadikoy-istanbul",
+        "Nane Mantı" : "https://getir.com/yemek/restoran/nane-manti-acibadem-mah-kadikoy-istanbul/",
+        "Noody" : "https://getir.com/yemek/restoran/noody-acibadem-mah-kadikoy-istanbul/",
+        "Red Haag" : "https://getir.com/yemek/restoran/red-haag-cafe-brasserie-acibadem-mah-kadikoy-istanbul",
+        "Rylee's Ranch Salad": "https://getir.com/yemek/restoran/rylee-s-ranch-salad-acibadem-mah-kadikoy-istanbul/",
+        "Seez Beez": "https://getir.com/yemek/restoran/seez-beez-falafel-wraps-burgers-acibadem-mah-kadikoy-istanbul",
+        "Senor Torreon":"https://getir.com/yemek/restoran/senor-torreon-red-hot-spicy-food-acibadem-mah-kadikoy-istanbul/",
+        "Tabur Köfte":"https://getir.com/yemek/restoran/tabur-kofte-acibadem-mah-kadikoy-istanbul",
+        "The Bowl":"https://getir.com/yemek/restoran/the-bowl-best-of-we-love-acibadem-mah-kadikoy-istanbul",
+        "Veganista" : "https://getir.com/yemek/restoran/veganista-acibadem-mah-kadikoy-istanbul"
 
-    for url in url_list:
+    }
+
+    for url_key in url_dict.keys():
 
         '''
         #This is for 'if connection get suspened by getir.com because we are making so much request in a short time'
@@ -73,6 +99,7 @@ def getir_to_excel():
             sec = 60*3
             sleep(sec)
         '''
+        url = url_dict[url_key]
 
         r = requests.get(url)
 
@@ -125,7 +152,7 @@ def getir_to_excel():
     
             print("URL is not found.")
 
-    return url_list # temp
+    return url_dict # temp
 
 
 while True:
