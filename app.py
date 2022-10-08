@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
 from openpyxl import load_workbook
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Date, Float
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, DateTime, Float
 
 engine = create_engine('sqlite:///logs.db', echo = True)
 meta = MetaData()
@@ -13,7 +13,7 @@ logs = Table(
    'logs', meta, 
    Column('id', Integer, primary_key = True), 
    Column("name", String(80)),
-   Column('date', Date), 
+   Column('date', DateTime), 
    Column('status', String(80)),
    Column("current_rating", Float)
 )
