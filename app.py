@@ -4,45 +4,6 @@ from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
 from openpyxl import load_workbook
-from sqlalchemy import create_engine, Column,Integer,String, Date, Float
-from sqlalchemy.orm  import DeclarativeBase, Session
-
-engine = create_engine("sqlite://logs.db", echo=True)
-
-class Base(DeclarativeBase):
-    pass
-
-class Log(Base):
-    __tablename__ = "logs"
-
-    id = Column(Integer, primary_key=True)
-    date = Column(Date)
-    name = Column(String(80))
-    open_close = Column(String(80))
-    current_rating = Column(Float)
-
-
-    def __init__(self, date, name, open_close, current_rating):
-        self.date = date
-        self.name = name
-        self.open_close = open_close
-        self.current_rating = current_rating
-        
-
-    def write_to_db(self, date, name, open_close, current_rating):
-
-        with Session(engine) as session:
-
-            log = Log(
-                date = date,
-                name=name,
-                open_close=open_close,
-                current_rating=current_rating
-            )
-
-            
-            session.add(log)
-            session.commit()
 
 
 def getir_to_excel_first():
@@ -87,27 +48,37 @@ def getir_to_excel_first():
 
     }
 
+    num = str(len(list(url_dict.keys())))
+    print(f"{num} restaurant's data are gonna be collected.")
+
     for url_key in url_dict.keys():
         url = url_dict[url_key]
         url_key = url_key
         r = None
 
+        index = str(list(url_dict.keys()).index(url_key))
+
         #This is for 'if connection get suspened by getir.com because we are making so much request in a short time'
         try:
             r = requests.get(url)
         except Exception as e:
-            print(e)
+            print(index+str(e))
             continue
         
         if r == None:
-            print("URL is None")
+            print(index+"URL is None")
             continue
 
         #TODO: This is gonna change, because we are not checking the restauant open/close status by status.code normally. # Have the screenshot in the screenshots.
 
         soup = BeautifulSoup(r.content, 'html.parser')
 
-        close = get_close(soup=soup)
+        try:
+            close = get_close(soup=soup)
+        
+        except Exception as e:
+            print(index+str(e))
+            continue
 
         date = datetime.now()
 
@@ -118,51 +89,59 @@ def getir_to_excel_first():
         except Exception as e:
 
             current_rating = "NO RATING"
-            print(e)
+            print(index+str(e))
+            continue
         
         # Check that if close state is exsist in the html.
         if close == None:            
             #TODO: append the date to the current sheet. But this is gonna change by the restaurant.
             status = "AÇIK"
-            ws.append([url_key, date, status , current_rating])
 
-            wb.save(filename=myFileName)
+            try:
 
-            wb.close()
-            print("Changes saved to excel!")
+                ws.append([url_key, date, status , current_rating])
 
+                wb.save(filename=myFileName)
+
+                wb.close()
+                print(index+"Changes saved to excel!")
+            
+            except Exception as e:
+                print(index+str(e))
+                print(index+"Couldn't write to excel! Keep looping")
+                continue
+
+            '''
             log = Log(
                 date = date,
                 name = url_key,
-                open_close=status
-                current_rating=current_rating
-            )
-
-            Log.write_to_db()
-            print("Changes saved to db.")
-            
-        
-        #TODO: This is gonna be canceled because we are not going to calculate the current OPEN/CLOSE status with this
-        else:
-            status = "KAPALI"
-
-            ws.append([url_key ,date, status , current_rating])
-
-            wb.save(filename=myFileName)
-    
-            wb.close()
-            print("Changes saved to excel!") 
-            
-            log = Log(
-                date=date,
-                name=url_key,
                 open_close=status,
                 current_rating=current_rating
             )
 
             log.write_to_db()
             print("Changes saved to db.")
+            '''
+        
+        #TODO: This is gonna be canceled because we are not going to calculate the current OPEN/CLOSE status with this
+        else:
+            status = "KAPALI"
 
+            try:
+
+                ws.append([url_key ,date, status , current_rating])
+
+                wb.save(filename=myFileName)
+        
+                wb.close()
+                print(index+"Changes saved to excel!") 
+            
+            except Exception as e:
+                
+                print(index+str(e))
+                print(index+"Couldn't write to excel! Keep looping")
+                continue
+                
         sleep(5)
 
     return url_dict # temp
@@ -204,11 +183,11 @@ def get_close(soup):
 
     return close
 
-@repeat(every(1).hour) #.until("18:30")
+@repeat(every(1).minute) #.until("18:30")
 def getir_to_excel():
 
     getir_to_excel_first()
-
+    
 #for the first time and then let the schdule does it's job
 getir_to_excel_first()
 
