@@ -4,7 +4,32 @@ from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
 from openpyxl import load_workbook
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Date, Float
 
+engine = create_engine('sqlite:///logs.db', echo = True)
+meta = MetaData()
+
+logs = Table(
+   'logs', meta, 
+   Column('id', Integer, primary_key = True), 
+   Column("name", String(80)),
+   Column('date', Date), 
+   Column('status', String(80)),
+   Column("current_rating", Float)
+)
+meta.create_all(engine)
+
+def save_to_db(name,date,status,current_rating):
+
+    sql = logs.insert().values(
+    name=name,
+    date=date,
+    status = status,
+    current_rating=current_rating,
+    )
+    engine.execute(sql)
+
+   
 
 def getir_to_excel_first():
 
@@ -110,18 +135,15 @@ def getir_to_excel_first():
                 print(index+str(e))
                 print(index+"Couldn't write to excel! Keep looping")
                 continue
+            
+            try:
+                save_to_db(name=url_key, date=date, status=status, current_rating=current_rating)
+            
+            except Exception as e:
+                print(index+str(e))
+                print("Couldn't write to db!")
+                continue
 
-            '''
-            log = Log(
-                date = date,
-                name = url_key,
-                open_close=status,
-                current_rating=current_rating
-            )
-
-            log.write_to_db()
-            print("Changes saved to db.")
-            '''
         
         #TODO: This is gonna be canceled because we are not going to calculate the current OPEN/CLOSE status with this
         else:
@@ -140,6 +162,14 @@ def getir_to_excel_first():
                 
                 print(index+str(e))
                 print(index+"Couldn't write to excel! Keep looping")
+                continue
+
+            try:
+                save_to_db(name=url_key, date=date, status=status, current_rating=current_rating)
+            
+            except Exception as e:
+                print(index+str(e))
+                print("Couldn't write to db!")
                 continue
                 
         sleep(5)
@@ -187,7 +217,7 @@ def get_close(soup):
 def getir_to_excel():
 
     getir_to_excel_first()
-    
+
 #for the first time and then let the schdule does it's job
 getir_to_excel_first()
 
