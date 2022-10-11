@@ -45,7 +45,7 @@ def save_to_db(branch, brand, date, status, current_rating):
 
 def getir_to_excel_first():
 
-    myFileName = r"./Sheet.xlsx"
+    myFileName = r"./logs.xlsx"
 
     wb = load_workbook(filename=myFileName)
 
