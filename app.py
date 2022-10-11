@@ -43,6 +43,29 @@ def save_to_db(branch, brand, date, status, current_rating):
     engine.execute(sql)
 
 
+def save_to_db_log(branch, brand, date, log):
+
+    sql = logs.insert().values(
+        branch=branch, brand=brand, date=date, status=log, current_rating=log
+    )
+
+
+def save_to_excel(ws, wb, myFileName, branch, brand, date, status, current_rating):
+    ws.append([branch, brand, date, status, current_rating])
+
+    wb.save(filename=myFileName)
+
+    wb.close()
+
+
+def save_to_excel_log(ws, wb, myFileName, branch, brand, date, log):
+    ws.append([branch, brand, date, log, log])
+
+    wb.save(filename=myFileName)
+
+    wb.close()
+
+
 def getir_to_excel_first():
 
     myFileName = r"./logs.xlsx"
@@ -86,7 +109,7 @@ def getir_to_excel_first():
         "Ataşehir Arianas Cheesecake": "https://getir.com/yemek/restoran/ariana-s-cheesecake-ataturk-mah-atasehir-istanbul/",
         "Ataşehir Big Bold Quick": "https://getir.com/yemek/restoran/bbq-big-bold-quick-ataturk-mah-atasehir-istanbul/",
         "Ataşehir Caesar Salad By": "https://getir.com/yemek/restoran/caesar-salad-by-chef-amadeo-ataturk-mah-atasehir-istanbul",
-        "Ataşhir Çosa": "https://getir.com/yemek/restoran/cosa-bi-corba-bi-salata-ataturk-mah-atasehir-istanbul/",
+        "Ataşehir Çosa": "https://getir.com/yemek/restoran/cosa-bi-corba-bi-salata-ataturk-mah-atasehir-istanbul/",
         "Ataşehir Detroit Bad Boys Pizza": "https://getir.com/yemek/restoran/detroit-bad-boys-pizza-ataturk-mah-atasehir-istanbul",
         "Ataşehir Dlycious Dyssert": "https://getir.com/yemek/restoran/dydy-dylicious-dyssert-ataturk-mah-atasehir-istanbul",
         "Ataşehir Doyuyo": "https://getir.com/yemek/restoran/doyuyo-ataturk-mah-atasehir-istanbul/",
@@ -221,9 +244,11 @@ def getir_to_excel_first():
 
     for url_key in url_dict.keys():
         url = url_dict[url_key]
-        url_key = url_key
-        branch = url_key.split()[0]
-        brand = " ".join(url_key.split().pop(0))
+        url_key_list = url_key.split(" ")
+        branch = url_key_list[0]
+        url_key_list.pop(0)
+        brand = " ".join(url_key_list)
+        date = datetime.now()
         r = None
 
         index = str(list(url_dict.keys()).index(url_key))
@@ -232,7 +257,22 @@ def getir_to_excel_first():
         try:
             r = requests.get(url)
         except Exception as e:
-            print(index + str(e))
+            log = str(e)
+
+            save_to_excel_log(
+                ws=ws,
+                wb=wb,
+                myFileName=myFileName,
+                branch=branch,
+                brand=brand,
+                date=date,
+                log=log,
+            )
+
+            save_to_db_log(branch=branch, brand=brand, date=date, log=log)
+
+            print(index + log)
+
             continue
 
         if r == None:
@@ -247,19 +287,28 @@ def getir_to_excel_first():
             close = get_close(soup=soup)
 
         except Exception as e:
-            print(index + str(e))
-            continue
+            log = str(e)
 
-        date = datetime.now()
+            save_to_excel_log(
+                ws=ws,
+                wb=wb,
+                myFileName=myFileName,
+                branch=branch,
+                brand=brand,
+                date=date,
+                log=log,
+            )
+
+            save_to_db_log(branch=branch, brand=brand, date=date, log=log)
+
+            print(index + log)
+            continue
 
         try:
             current_rating = get_rating(soup=soup)
 
         except Exception as e:
-
-            current_rating = "NO RATING"
-            print(index + str(e))
-            continue
+            current_rating = None
 
         # Check that if close state is exsist in the html.
         if close == None:
@@ -268,11 +317,17 @@ def getir_to_excel_first():
 
             try:
 
-                ws.append([url_key, date, status, current_rating])
+                save_to_excel(
+                    ws=ws,
+                    wb=wb,
+                    myFileName=myFileName,
+                    branch=branch,
+                    brand=brand,
+                    date=date,
+                    status=status,
+                    current_rating=current_rating,
+                )
 
-                wb.save(filename=myFileName)
-
-                wb.close()
                 print(index + "Changes saved to excel!")
 
             except Exception as e:
@@ -300,11 +355,17 @@ def getir_to_excel_first():
 
             try:
 
-                ws.append([url_key, date, status, current_rating])
+                save_to_excel(
+                    ws=ws,
+                    wb=wb,
+                    myFileName=myFileName,
+                    branch=branch,
+                    brand=brand,
+                    date=date,
+                    status=status,
+                    current_rating=current_rating,
+                )
 
-                wb.save(filename=myFileName)
-
-                wb.close()
                 print(index + "Changes saved to excel!")
 
             except Exception as e:
@@ -315,7 +376,8 @@ def getir_to_excel_first():
 
             try:
                 save_to_db(
-                    name=url_key,
+                    branch=branch,
+                    brand=brand,
                     date=date,
                     status=status,
                     current_rating=current_rating,
@@ -333,7 +395,8 @@ def getir_to_excel_first():
 
 def get_rating(soup):
     # Find the rate
-    s = soup.find("div", id="__next")
+    body = soup.body
+    s = body.find("div", id="__next")
     s2 = s.find("div", class_="sc-212542e0-2 ckZpLq")
     s4 = s2.find("main", class_="sc-212542e0-0 iiapCb")
     s5 = s4.find("div", class_="sc-e85e5299-0 sc-4e0754cc-0 hkaVQN klYfLJ")
@@ -355,8 +418,8 @@ def get_rating(soup):
 
 
 def get_close(soup):
-
-    s11 = soup.find("div", id="__next")
+    body = soup.body
+    s11 = body.find("div", id="__next")
     s10 = s11.find("div", class_="sc-212542e0-2 ckZpLq")
     s9 = s10.find("main", class_="sc-212542e0-0 iiapCb")
     s8 = s9.find("div", class_="sc-e85e5299-0 sc-4e0754cc-0 hkaVQN klYfLJ")
