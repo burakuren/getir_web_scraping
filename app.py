@@ -32,7 +32,7 @@ logs = Table(
 meta.create_all(engine)
 
 
-def save_to_db(branch, brand, date,hour, status, current_rating):
+def save_to_db(branch, brand, date, hour, status, current_rating):
 
     sql = logs.insert().values(
         branch=branch,
@@ -45,23 +45,25 @@ def save_to_db(branch, brand, date,hour, status, current_rating):
     engine.execute(sql)
 
 
-def save_to_db_log(branch, brand, date,hour, log):
+def save_to_db_log(branch, brand, date, hour, log):
 
     sql = logs.insert().values(
-        branch=branch, brand=brand, date=date,hour=hour, status=log, current_rating=log
+        branch=branch, brand=brand, date=date, hour=hour, status=log, current_rating=log
     )
 
 
-def save_to_excel(ws, wb, myFileName, branch, brand, date,hour, status, current_rating):
-    ws.append([branch, brand, date,hour, status, current_rating])
+def save_to_excel(
+    ws, wb, myFileName, branch, brand, date, hour, status, current_rating
+):
+    ws.append([branch, brand, date, hour, status, current_rating])
 
     wb.save(filename=myFileName)
 
     wb.close()
 
 
-def save_to_excel_log(ws, wb, myFileName, branch, brand, date,hour, log):
-    ws.append([branch, brand, date,hour, log, log])
+def save_to_excel_log(ws, wb, myFileName, branch, brand, date, hour, log):
+    ws.append([branch, brand, date, hour, log, log])
 
     wb.save(filename=myFileName)
 
@@ -251,9 +253,9 @@ def getir_to_excel_first():
         url_key_list.pop(0)
         brand = " ".join(url_key_list)
         now = datetime.now()
-        format_date = "%m/%d/%Y"
+        format_date = "%d/%m/%Y"
         format_hour = "%H:%M:%S"
-        #format datetime using strftime() 
+        # format datetime using strftime()
         date = now.strftime(format_date)
         hour = now.strftime(format_hour)
         r = None
@@ -307,7 +309,7 @@ def getir_to_excel_first():
                 log=log,
             )
 
-            save_to_db_log(branch=branch, brand=brand, date=date,hour=hour, log=log)
+            save_to_db_log(branch=branch, brand=brand, date=date, hour=hour, log=log)
 
             print(index + log)
             continue
