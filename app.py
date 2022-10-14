@@ -11,7 +11,6 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    DateTime,
     Float,
 )
 
