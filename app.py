@@ -24,42 +24,44 @@ logs = Table(
     Column("id", Integer, primary_key=True),
     Column("branch", String(80)),
     Column("brand", String(80)),
-    Column("date", DateTime),
+    Column("date", String(80)),
+    Column("hour", String(80)),
     Column("status", String(80)),
     Column("current_rating", Float),
 )
 meta.create_all(engine)
 
 
-def save_to_db(branch, brand, date, status, current_rating):
+def save_to_db(branch, brand, date,hour, status, current_rating):
 
     sql = logs.insert().values(
         branch=branch,
         brand=brand,
         date=date,
+        hour=hour,
         status=status,
         current_rating=current_rating,
     )
     engine.execute(sql)
 
 
-def save_to_db_log(branch, brand, date, log):
+def save_to_db_log(branch, brand, date,hour, log):
 
     sql = logs.insert().values(
-        branch=branch, brand=brand, date=date, status=log, current_rating=log
+        branch=branch, brand=brand, date=date,hour=hour, status=log, current_rating=log
     )
 
 
-def save_to_excel(ws, wb, myFileName, branch, brand, date, status, current_rating):
-    ws.append([branch, brand, date, status, current_rating])
+def save_to_excel(ws, wb, myFileName, branch, brand, date,hour, status, current_rating):
+    ws.append([branch, brand, date,hour, status, current_rating])
 
     wb.save(filename=myFileName)
 
     wb.close()
 
 
-def save_to_excel_log(ws, wb, myFileName, branch, brand, date, log):
-    ws.append([branch, brand, date, log, log])
+def save_to_excel_log(ws, wb, myFileName, branch, brand, date,hour, log):
+    ws.append([branch, brand, date,hour, log, log])
 
     wb.save(filename=myFileName)
 
@@ -248,7 +250,12 @@ def getir_to_excel_first():
         branch = url_key_list[0]
         url_key_list.pop(0)
         brand = " ".join(url_key_list)
-        date = datetime.now()
+        now = datetime.now()
+        format_date = "%m/%d/%Y"
+        format_hour = "%H:%M:%S"
+        #format datetime using strftime() 
+        date = now.strftime(format_date)
+        hour = now.strftime(format_hour)
         r = None
 
         index = str(list(url_dict.keys()).index(url_key))
@@ -296,10 +303,11 @@ def getir_to_excel_first():
                 branch=branch,
                 brand=brand,
                 date=date,
+                hour=hour,
                 log=log,
             )
 
-            save_to_db_log(branch=branch, brand=brand, date=date, log=log)
+            save_to_db_log(branch=branch, brand=brand, date=date,hour=hour, log=log)
 
             print(index + log)
             continue
@@ -324,6 +332,7 @@ def getir_to_excel_first():
                     branch=branch,
                     brand=brand,
                     date=date,
+                    hour=hour,
                     status=status,
                     current_rating=current_rating,
                 )
@@ -340,6 +349,7 @@ def getir_to_excel_first():
                     branch=branch,
                     brand=brand,
                     date=date,
+                    hour=hour,
                     status=status,
                     current_rating=current_rating,
                 )
@@ -362,6 +372,7 @@ def getir_to_excel_first():
                     branch=branch,
                     brand=brand,
                     date=date,
+                    hour=hour,
                     status=status,
                     current_rating=current_rating,
                 )
@@ -379,6 +390,7 @@ def getir_to_excel_first():
                     branch=branch,
                     brand=brand,
                     date=date,
+                    hour=hour,
                     status=status,
                     current_rating=current_rating,
                 )
