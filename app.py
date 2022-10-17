@@ -274,10 +274,11 @@ def getir_to_excel_first():
                 branch=branch,
                 brand=brand,
                 date=date,
+                hour=hour,
                 log=log,
             )
 
-            save_to_db_log(branch=branch, brand=brand, date=date, log=log)
+            save_to_db_log(branch=branch, brand=brand, date=date,hour=hour, log=log)
 
             print(index + log)
 
