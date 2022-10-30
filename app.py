@@ -88,41 +88,9 @@ def save_to_excel_log(ws, wb, myFileName, branch, brand, date, hour, log):
     wb.close()
 
 def save_to_csv(branch,brand,date,hour,status,current_rating):
-    # field names
-    fields = ['branch', 'brand', 'date', 'hour', 'status', 'current_rating']
-
-    # data rows of csv file
-    rows = [['Nikhil', 'COE', '2', '9.0'],
-            ['Sanchit', 'COE', '2', '9.1'],
-            ['Aditya', 'IT', '2', '9.3'],
-            ['Sagar', 'SE', '1', '9.5'],
-            ['Prateek', 'MCE', '3', '7.8'],
-            ['Sahil', 'EP', '2', '9.1']]
-
-    with open('logs', 'w') as f:
-        # using csv.writer method from CSV package
-        write = csv.writer(f)
-
-        write.writerow(fields)
-        write.writerows(rows)
+    None
 def save_to_csv_log():
-    # field names
-    fields = ['Name', 'Branch', 'Year', 'CGPA']
-
-    # data rows of csv file
-    rows = [['Nikhil', 'COE', '2', '9.0'],
-            ['Sanchit', 'COE', '2', '9.1'],
-            ['Aditya', 'IT', '2', '9.3'],
-            ['Sagar', 'SE', '1', '9.5'],
-            ['Prateek', 'MCE', '3', '7.8'],
-            ['Sahil', 'EP', '2', '9.1']]
-
-    with open('GFG', 'w') as f:
-        # using csv.writer method from CSV package
-        write = csv.writer(f)
-
-        write.writerow(fields)
-        write.writerows(rows)
+    None
 def getir_to_excel_first():
 
     myFileName = r"./logs.xlsx"
